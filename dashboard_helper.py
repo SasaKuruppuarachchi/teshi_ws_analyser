@@ -12,6 +12,7 @@ import time
 INDEX_FILENAME = "workspace_index.json"
 LOCK_FILENAME = "workspace_lock.pid"
 is_scanning = False
+_cached_index = None
 def get_roots():
     project_root = os.path.dirname(os.path.abspath(__file__))
     scan_root = os.path.dirname(project_root)
@@ -22,6 +23,8 @@ def is_pid_running(pid):
         return False
     try:
         os.kill(pid, 0)
+        return True
+    except PermissionError:
         return True
     except OSError:
         return False
@@ -81,9 +84,23 @@ def get_dir_size(path):
         pass
     return total
 
-def run_scan():
+def run_scan(force_dates=False):
     project_root, workspace_root = get_roots()
     print(f"[Scan Thread] Starting workspace scan at: {workspace_root}")
+    
+    existing_projects = {}
+    if not force_dates:
+        try:
+            index_path = os.path.normpath(os.path.join(project_root, INDEX_FILENAME))
+            if os.path.exists(index_path):
+                with open(index_path, "r", encoding="utf-8") as f:
+                    old_data = json.load(f)
+                    existing_projects = old_data.get("projects", {})
+                print(f"[Scan Thread] Loaded {len(existing_projects)} projects from cache to optimize timestamping.")
+        except Exception as e:
+            print(f"[Scan Thread] Could not load cache: {e}")
+    else:
+        print("[Scan Thread] Force re-indexing chronological timeline: ignoring cached project dates.")
     
     report = {
         "summary": {
@@ -162,18 +179,18 @@ def run_scan():
             if parent == "z_Finished" and len(parts) >= 3:
                 country = parts[1]
                 if country not in ["1_assets", "voicecuts"]:
-                    project_key = os.path.join("z_Finished", parts[1], parts[2])
+                    project_key = os.path.join("z_Finished", parts[1], parts[2]).replace("\\", "/")
                     is_project = True
                     is_finished = True
             elif parent not in ["1_Assets", "1_Dummy_project", "1_Shorts", "z_Finished", "z_Other", "z_qoutes and dreams and recipes"]:
-                project_key = os.path.join(parts[0], parts[1])
+                project_key = os.path.join(parts[0], parts[1]).replace("\\", "/")
                 is_project = True
             
         if is_project and project_key:
             if project_key not in report["projects"]:
                 report["projects"][project_key] = {
                     "key": project_key,
-                    "path": os.path.join(workspace_root, project_key),
+                    "path": os.path.normpath(os.path.join(workspace_root, project_key)),
                     "name": os.path.basename(project_key),
                     "country": parts[1] if is_finished else parts[0],
                     "is_finished": is_finished,
@@ -183,6 +200,11 @@ def run_scan():
                     "has_thumbnail": False,
                     "has_footage": False,
                     "has_audio": False,
+                    "min_mtime": None,
+                    "max_mtime": None,
+                    "footage_date_raw": 0,
+                    "footage_date": None,
+                    "mtime_checked_count": 0,
                     "subfolders": [],
                     "files_count": 0,
                     "size_gb": 0,
@@ -254,6 +276,24 @@ def run_scan():
                 p_info = report["projects"][project_key]
                 p_info["files_count"] += 1
                 p_info["size_gb"] += file_size / (1024**3)
+                
+                # Check if we can reuse cached date
+                old_p = existing_projects.get(project_key, {})
+                if old_p.get("footage_date_raw"):
+                    p_info["footage_date_raw"] = old_p["footage_date_raw"]
+                    p_info["footage_date"] = old_p["footage_date"]
+                elif ext in video_exts or ext in image_exts:
+                    # Sample up to 10 files per project
+                    if p_info.get("mtime_checked_count", 0) < 10:
+                        try:
+                            mtime = os.path.getmtime(full_path)
+                            if p_info["min_mtime"] is None or mtime < p_info["min_mtime"]:
+                                p_info["min_mtime"] = mtime
+                            if p_info["max_mtime"] is None or mtime > p_info["max_mtime"]:
+                                p_info["max_mtime"] = mtime
+                            p_info["mtime_checked_count"] = p_info.get("mtime_checked_count", 0) + 1
+                        except Exception:
+                            pass
 
         for d in dirs:
             if d.startswith(".") or d.startswith("_") or d == "teshi_ws_analyser":
@@ -276,7 +316,34 @@ def run_scan():
         p_info["size_gb"] = round(p_info["size_gb"], 2)
         p_info["subfolders"] = list(set(p_info["subfolders"]))
         
+        if p_info.get("footage_date_raw"):
+            p_info.pop("min_mtime", None)
+            p_info.pop("max_mtime", None)
+            p_info.pop("mtime_checked_count", None)
+        else:
+            mtime_to_use = p_info.get("min_mtime") or p_info.get("max_mtime")
+            if not mtime_to_use:
+                try:
+                    mtime_to_use = os.path.getmtime(p_info["path"])
+                except Exception:
+                    mtime_to_use = time.time()
+                    
+            p_info["footage_date_raw"] = mtime_to_use
+            try:
+                p_info["footage_date"] = time.strftime("%Y-%m-%d", time.localtime(mtime_to_use))
+            except Exception:
+                p_info["footage_date"] = time.strftime("%Y-%m-%d", time.localtime())
+            
+            p_info.pop("min_mtime", None)
+            p_info.pop("max_mtime", None)
+            p_info.pop("mtime_checked_count", None)
+        
         proj_path = p_info["path"]
+        p_info["metadata"] = {
+            "youtube_video": "",
+            "public_album": "",
+            "private_album": ""
+        }
         if os.path.exists(proj_path):
             try:
                 for entry in os.scandir(proj_path):
@@ -292,6 +359,18 @@ def run_scan():
                             p_info["has_thumbnail"] = True
             except Exception as e:
                 print(f"[Scan Thread] Error scanning project compliance for {p_key}: {e}")
+                
+            # Parse project_metadata.json if it exists
+            metadata_path = os.path.normpath(os.path.join(proj_path, "project_metadata.json"))
+            if os.path.exists(metadata_path):
+                try:
+                    with open(metadata_path, "r", encoding="utf-8") as meta_file:
+                        meta_data = json.load(meta_file)
+                        p_info["metadata"]["youtube_video"] = meta_data.get("youtube_video", "").strip()
+                        p_info["metadata"]["public_album"] = meta_data.get("public_album", "").strip()
+                        p_info["metadata"]["private_album"] = meta_data.get("private_album", "").strip()
+                except Exception as e:
+                    print(f"[Scan Thread] Error reading metadata for {p_key}: {e}")
 
     print("[Scan Thread] Sorting large files...")
     all_files.sort(key=lambda x: x[1], reverse=True)
@@ -299,6 +378,7 @@ def run_scan():
         report["large_files"].append({
             "path": path,
             "name": os.path.basename(path),
+            "rel_path": os.path.relpath(path, workspace_root).replace("\\", "/"),
             "size_gb": round(size / (1024**3), 3),
             "type": file_type
         })
@@ -307,7 +387,10 @@ def run_scan():
     total_non_clutter_bytes = sum(x[1] for x in all_files)
     report["summary"]["total_size_gb"] = round(total_non_clutter_bytes / (1024**3), 2)
     
-    index_path = os.path.join(project_root, INDEX_FILENAME)
+    global _cached_index
+    _cached_index = report
+    
+    index_path = os.path.normpath(os.path.join(project_root, INDEX_FILENAME))
     try:
         with open(index_path, "w", encoding="utf-8") as idx_file:
             json.dump(report, idx_file, indent=2)
@@ -318,30 +401,56 @@ def run_scan():
     return report
 
 def load_index():
+    global _cached_index
     project_root, workspace_root = get_roots()
-    index_path = os.path.join(project_root, INDEX_FILENAME)
+    index_path = os.path.normpath(os.path.join(project_root, INDEX_FILENAME))
+    
+    if _cached_index is not None:
+        return _cached_index
+        
     if os.path.exists(index_path):
         try:
             with open(index_path, "r", encoding="utf-8") as idx_file:
-                data = json.load(idx_file)
-                return data
+                _cached_index = json.load(idx_file)
+                return _cached_index
         except Exception as e:
-            print(f"[Server] Failed to read index cache: {e}.")
-    print("[Server] Index missing! Running synchronous fallback scan...")
-    return run_scan()
+            print(f"[Server] Failed to read index cache file: {e}.")
+            
+    print("[Server] Index cache missing or locked. Initializing default empty structure and starting background scan...")
+    _cached_index = {
+        "summary": {
+            "total_size_gb": 0.0,
+            "total_files": 0,
+            "total_folders": 0,
+            "video_files": 0,
+            "image_files": 0,
+            "audio_files": 0,
+            "clutter_files": 0,
+            "clutter_size_mb": 0.0,
+            "resolve_projects": 0,
+            "premiere_projects": 0
+        },
+        "root_folders": [],
+        "large_files": [],
+        "typos": [],
+        "clutter_summary": {"count": 0, "size_bytes": 0},
+        "projects": {}
+    }
+    trigger_background_scan()
+    return _cached_index
 
-def trigger_background_scan():
+def trigger_background_scan(force_dates=False):
     global is_scanning
     if is_scanning:
         print("[Server] Background scan already running. Request ignored.")
         return
         
     is_scanning = True
-    print("[Server] Spawning background scan thread...")
+    print(f"[Server] Spawning background scan thread (force_dates={force_dates})...")
     def run():
         global is_scanning
         try:
-            run_scan()
+            run_scan(force_dates=force_dates)
         except Exception as e:
             print(f"[Scan Thread] Error: {e}")
         finally:
@@ -441,11 +550,58 @@ class DashboardHandler(BaseHTTPRequestHandler):
         
         try:
             if parsed_path.path == "/api/scan":
-                print("[Server] POST /api/scan -> Manual rescan requested.")
-                trigger_background_scan()
+                query = urllib.parse.parse_qs(parsed_path.query)
+                force_dates = "force_dates" in query
+                if not force_dates and post_data:
+                    try:
+                        params = json.loads(post_data.decode("utf-8"))
+                        force_dates = params.get("force_dates", False)
+                    except Exception:
+                        pass
+                        
+                print(f"[Server] POST /api/scan (force_dates={force_dates}) -> Manual rescan requested.")
+                trigger_background_scan(force_dates=force_dates)
                 response = {
                     "success": True,
                     "message": "Scan started in background."
+                }
+                
+            elif parsed_path.path == "/api/save-metadata":
+                params = json.loads(post_data.decode("utf-8")) if post_data else {}
+                project_key = params.get("project_key", "").strip()
+                
+                print(f"[Server] POST /api/save-metadata -> Saving metadata for: {project_key}")
+                if not project_key:
+                    raise Exception("Missing project key.")
+                    
+                data = load_index()
+                project = data.get("projects", {}).get(project_key)
+                if not project:
+                    raise Exception(f"Project not found: {project_key}")
+                    
+                proj_path = project["path"]
+                metadata_path = os.path.normpath(os.path.join(proj_path, "project_metadata.json"))
+                
+                meta_to_save = {
+                    "youtube_video": params.get("youtube_video", "").strip(),
+                    "public_album": params.get("public_album", "").strip(),
+                    "private_album": params.get("private_album", "").strip()
+                }
+                
+                os.makedirs(proj_path, exist_ok=True)
+                with open(metadata_path, "w", encoding="utf-8") as meta_file:
+                    json.dump(meta_to_save, meta_file, indent=2)
+                    
+                print(f"[Server] Saved project metadata to: {metadata_path}")
+                
+                global _cached_index
+                if _cached_index and "projects" in _cached_index and project_key in _cached_index["projects"]:
+                    _cached_index["projects"][project_key]["metadata"] = meta_to_save
+                    
+                trigger_background_scan()
+                response = {
+                    "success": True,
+                    "message": "Metadata saved successfully."
                 }
                 
             elif parsed_path.path == "/api/clean-clutter":
@@ -510,14 +666,14 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 if not project_name or not parent_folder:
                     raise Exception("Missing project name or parent folder.")
                     
-                target_dir = os.path.join(workspace_root, parent_folder, project_name)
+                target_dir = os.path.normpath(os.path.join(workspace_root, parent_folder, project_name))
                 if os.path.exists(target_dir):
                     raise Exception("Project folder already exists!")
                     
                 subfolders = ["01_Footage", "02_Audio", "03_Projects", "04_Assets", "05_Exports", "06_Thumbnails"]
                 os.makedirs(target_dir, exist_ok=True)
                 for sf in subfolders:
-                    os.makedirs(os.path.join(target_dir, sf), exist_ok=True)
+                    os.makedirs(os.path.normpath(os.path.join(target_dir, sf)), exist_ok=True)
                 
                 trigger_background_scan()
                 response = {
@@ -545,7 +701,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     raise Exception(f"Invalid folder type: {folder_type}")
                     
                 folder_name = folder_map[folder_type]
-                folder_path = os.path.join(workspace_root, project_key, folder_name)
+                folder_path = os.path.normpath(os.path.join(workspace_root, project_key, folder_name))
                 
                 created = False
                 if not os.path.exists(folder_path):

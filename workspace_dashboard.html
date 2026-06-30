@@ -357,7 +357,7 @@
             padding: 0 1.5rem 1.5rem 1.5rem;
             border-top: 1px solid var(--card-border);
             transition: max-height 0.3s ease-out;
-            max-height: 2000px;
+            max-height: 15000px;
             overflow: hidden;
         }
 
@@ -404,7 +404,14 @@
             font-weight: 600;
             color: white;
         }
-
+        .project-name-line:hover .project-name {
+            color: var(--accent-primary) !important;
+            text-decoration: underline;
+        }
+        .timeline-project-title:hover .project-name {
+            color: var(--accent-primary) !important;
+            text-decoration: underline;
+        }
         /* Active Project Files */
         .project-files-container {
             display: flex;
@@ -732,6 +739,247 @@
             font-size: 0.95rem;
         }
 
+        /* Vertical Timeline */
+        .timeline-container {
+            position: relative;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 1.5rem 0;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 21px;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            border-radius: 10px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.2rem;
+            padding-left: 4.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(4px);
+        }
+
+        .timeline-badge {
+            position: absolute;
+            left: 6px;
+            top: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            border: 3px solid var(--accent-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 0 10px var(--glow-color);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-badge {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 14px rgba(236, 72, 153, 0.4);
+            transform: scale(1.1);
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+
+        .timeline-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1.25rem 1.5rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-project-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-project-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* Options Hamburger & Output Links */
+        .options-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .options-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+        .output-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.22rem 0.55rem;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .output-link.youtube {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+        .output-link.youtube:hover {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+        .output-link.public {
+            background: rgba(59, 130, 246, 0.08);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+        .output-link.public:hover {
+            background: rgba(59, 130, 246, 0.18);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        .output-link.private {
+            background: rgba(156, 163, 175, 0.08);
+            border-color: rgba(156, 163, 175, 0.2);
+            color: #d1d5db;
+        }
+        .output-link.private:hover {
+            background: rgba(156, 163, 175, 0.18);
+            border-color: rgba(156, 163, 175, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(8, 6, 18, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: modalSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalSlide {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent-primary);
+            padding-left: 10px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .close-btn:hover {
+            color: white;
+        }
+        .input-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.25);
+        }
+
         /* Toast notifications */
         .alert-toast {
             position: fixed;
@@ -812,6 +1060,9 @@
                 <button class="btn btn-secondary" onclick="cleanClutter()" id="btn-clean">
                     🧹 Clean macOS Clutter
                 </button>
+                <button class="btn btn-secondary" onclick="forceReindexTimeline()" id="btn-reindex" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25); color: #c084fc;" title="Recheck footage timestamps across all directories (ignoring cache)">
+                    📅 Re-index Timeline
+                </button>
                 <button class="btn" onclick="shutdownServer()" id="btn-shutdown" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5;">
                     🛑 Kill Instance
                 </button>
@@ -850,17 +1101,29 @@
             </div>
             <div class="filter-tabs">
                 <button class="filter-tab active" onclick="setFilter('all', this)">All Projects</button>
-                <button class="filter-tab" onclick="setFilter('resolve', this)">DaVinci Projects</button>
-                <button class="filter-tab" onclick="setFilter('premiere', this)">Premiere Projects</button>
                 <button class="filter-tab" onclick="setFilter('warning', this)">Compliance Warnings</button>
+                <button class="filter-tab" onclick="setFilter('timeline', this)">Timeline View</button>
             </div>
         </div>
 
         <!-- Main Layout Split -->
         <div class="workspace-split">
             <!-- Left Side: Grouped Active Projects -->
-            <div id="projects-grouped-container">
-                <!-- Filled by JS -->
+            <div style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%;">
+                <div id="scan-running-banner" class="card" style="display: none; align-items: center; gap: 15px; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); padding: 1.25rem 1.5rem; border-radius: 18px; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);">
+                    <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: rgba(139, 92, 246, 0.15); border-radius: 50%; flex-shrink: 0;">
+                        <div class="spinning" style="width: 16px; height: 16px; border: 2.5px solid rgba(139, 92, 246, 0.2); border-top-color: var(--accent-primary); border-radius: 50%;"></div>
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <h4 style="margin: 0; color: #fff; font-size: 0.95rem; font-weight: 700;">Chronological Indexing in Progress...</h4>
+                        <p style="margin: 3px 0 0 0; color: var(--text-muted); font-size: 0.8rem; line-height: 1.45;">
+                            The optimized background engine is checking file modification dates across your project folders to build your vertical timeline. Only newly-added or modified media folders are being actively parsed (using lightweight metadata sampling). Your view will automatically refresh when complete.
+                        </p>
+                    </div>
+                </div>
+                <div id="projects-grouped-container" style="width: 100%;">
+                    <!-- Filled by JS -->
+                </div>
             </div>
 
             <!-- Right Side: Side Panels -->
@@ -929,6 +1192,35 @@
     <!-- Toast message overlay -->
     <div class="alert-toast" id="toast">
         <span id="toast-message">Message text</span>
+    </div>
+
+    <!-- Metadata Modal -->
+    <div class="modal-overlay" id="metadata-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-project-title" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: white;">Project Output Links</h3>
+                <button class="close-btn" onclick="closeMetadataModal()">✕</button>
+            </div>
+            <form onsubmit="saveMetadata(event)">
+                <input type="hidden" id="modal-project-key">
+                <div class="input-group">
+                    <label class="input-label" for="meta-youtube">📺 YouTube Video Link</label>
+                    <input class="form-control" type="url" id="meta-youtube" placeholder="https://youtube.com/watch?v=...">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="meta-public">📸 Public Album Link</label>
+                    <input class="form-control" type="url" id="meta-public" placeholder="https://photos.google.com/share/...">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="meta-private">🔒 Private Album Link</label>
+                    <input class="form-control" type="url" id="meta-private" placeholder="https://photos.google.com/share/...">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 1.75rem; justify-content: flex-end;">
+                    <button class="btn btn-secondary" type="button" onclick="closeMetadataModal()">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -1036,6 +1328,29 @@
             await loadData(true);
         }
 
+        async function forceReindexTimeline() {
+            const btn = document.getElementById("btn-reindex");
+            btn.disabled = true;
+            btn.innerText = "📅 Re-indexing...";
+            showToast("Force recheck of all footage timestamps initiated.");
+            try {
+                const res = await fetch('/api/scan?force_dates=true', { method: 'POST' });
+                const r = await res.json();
+                if (r.success) {
+                    showToast("Timeline chronological indexing started in the background.");
+                    startPolling();
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to start timeline recheck.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "📅 Re-index Timeline";
+            }
+        }
+
         async function cleanClutter() {
             const btn = document.getElementById("btn-clean");
             btn.disabled = true;
@@ -1112,6 +1427,67 @@
                 }
             } catch (err) {
                 showToast("Failed to initialize or open folder.", "error");
+            }
+        }
+
+        function openMetadataModal(projectKey, event) {
+            if (event) event.stopPropagation();
+            
+            const project = workspaceData.projects[projectKey];
+            if (!project) return;
+            
+            document.getElementById("modal-project-key").value = projectKey;
+            document.getElementById("modal-project-title").innerText = `Links for: ${project.name}`;
+            
+            const metadata = project.metadata || { youtube_video: '', public_album: '', private_album: '' };
+            document.getElementById("meta-youtube").value = metadata.youtube_video || '';
+            document.getElementById("meta-public").value = metadata.public_album || '';
+            document.getElementById("meta-private").value = metadata.private_album || '';
+            
+            document.getElementById("metadata-modal").classList.add("active");
+        }
+
+        function closeMetadataModal() {
+            document.getElementById("metadata-modal").classList.remove("active");
+        }
+
+        async function saveMetadata(event) {
+            event.preventDefault();
+            const projectKey = document.getElementById("modal-project-key").value;
+            const youtube = document.getElementById("meta-youtube").value.trim();
+            const publicAlbum = document.getElementById("meta-public").value.trim();
+            const privateAlbum = document.getElementById("meta-private").value.trim();
+            
+            showToast("Saving project output links...");
+            try {
+                const res = await fetch('/api/save-metadata', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_key: projectKey,
+                        youtube_video: youtube,
+                        public_album: publicAlbum,
+                        private_album: privateAlbum
+                    })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    showToast(r.message);
+                    closeMetadataModal();
+                    if (workspaceData.projects[projectKey]) {
+                        workspaceData.projects[projectKey].metadata = {
+                            youtube_video: youtube,
+                            public_album: publicAlbum,
+                            private_album: privateAlbum
+                        };
+                    }
+                    renderDashboard();
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to save metadata.", "error");
             }
         }
 
@@ -1202,6 +1578,11 @@
         function renderDashboard() {
             if (!workspaceData) return;
 
+            const banner = document.getElementById("scan-running-banner");
+            if (banner) {
+                banner.style.display = workspaceData.is_scanning ? 'flex' : 'none';
+            }
+
             document.getElementById("stat-storage").innerText = workspaceData.summary.total_size_gb.toFixed(1) + " GB";
             document.getElementById("stat-videos").innerText = workspaceData.summary.video_files.toLocaleString();
             document.getElementById("stat-images").innerText = workspaceData.summary.image_files.toLocaleString();
@@ -1233,8 +1614,149 @@
             const projectsGroupedContainer = document.getElementById("projects-grouped-container");
             projectsGroupedContainer.innerHTML = '';
 
-            const groupedProjects = {};
             const projectsList = Object.values(workspaceData.projects);
+
+            if (activeFilter === 'timeline') {
+                const timelineDiv = document.createElement("div");
+                timelineDiv.className = "timeline-container";
+                
+                const allProjs = projectsList.filter(p => {
+                    return p.name.toLowerCase().includes(searchKeyword) ||
+                           p.country.toLowerCase().includes(searchKeyword) ||
+                           p.project_files.some(pf => pf.name.toLowerCase().includes(searchKeyword));
+                });
+                
+                allProjs.sort((a, b) => (b.footage_date_raw || 0) - (a.footage_date_raw || 0));
+                
+                if (allProjs.length === 0) {
+                    projectsGroupedContainer.innerHTML = `
+                        <div class="card" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            🔍 No projects found matching the filters or search query.
+                        </div>
+                    `;
+                    return;
+                }
+                
+                allProjs.forEach(p => {
+                    const safeKey = p.key.replace(/\\/g, '/');
+                    const flagUrl = getCountryFlag(p.country);
+                    const flagHtml = flagUrl ? 
+                        `<img src="${flagUrl}" style="width: 20px; height: 13px; object-fit: cover; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);" alt="${p.country} flag">` : 
+                        `📁`;
+                        
+                    let filesHtml = '';
+                    if (p.project_files && p.project_files.length > 0) {
+                        p.project_files.forEach(pf => {
+                            const isResolve = pf.type === 'DaVinci Resolve';
+                            const escapedPath = pf.path.replace(/\\/g, '/');
+                            filesHtml += `
+                                <span class="project-file-chip ${isResolve ? 'resolve' : 'premiere'}" 
+                                      title="Click to open: ${pf.path}"
+                                      onclick="openProjectFile('${escapedPath}')">
+                                    ${isResolve ? '🎥' : '🎬'} ${pf.name}
+                                </span>
+                            `;
+                        });
+                    }
+                    
+                    const complianceItems = [
+                        { type: "footage", name: "Footage folder (01_Footage)", has: p.has_footage },
+                        { type: "audio", name: "Audio folder (02_Audio)", has: p.has_audio },
+                        { type: "exports", name: "Exports folder (05_Exports)", has: p.has_exports },
+                        { type: "thumbnail", name: "Thumbnail folder (06_Thumbnails)", has: p.has_thumbnail }
+                    ];
+
+                    let dotsHtml = '';
+                    complianceItems.forEach(item => {
+                        const tooltipText = item.has ? 
+                            `${item.name}: Found. Click to open in Finder/Explorer.` : 
+                            `${item.name}: Missing! Click to create and open folder.`;
+                        dotsHtml += `
+                            <div class="comp-dot ${item.has ? 'active' : ''}" 
+                                 data-tooltip="${tooltipText}"
+                                 onclick="handleDotClick('${safeKey}', '${item.type}')">
+                            </div>
+                        `;
+                    });
+                    
+                    let linksHtml = '';
+                    if (p.metadata) {
+                        if (p.metadata.youtube_video) {
+                            linksHtml += `
+                                <a class="output-link youtube" href="${p.metadata.youtube_video}" target="_blank" onclick="event.stopPropagation();" title="Watch YouTube video">
+                                    📺 YouTube
+                                </a>
+                            `;
+                        }
+                        if (p.metadata.public_album) {
+                            linksHtml += `
+                                <a class="output-link public" href="${p.metadata.public_album}" target="_blank" onclick="event.stopPropagation();" title="View Public Album">
+                                    📸 Public Album
+                                </a>
+                            `;
+                        }
+                        if (p.metadata.private_album) {
+                            linksHtml += `
+                                <a class="output-link private" href="${p.metadata.private_album}" target="_blank" onclick="event.stopPropagation();" title="View Private Album">
+                                    🔒 Private Album
+                                </a>
+                            `;
+                        }
+                    }
+
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "timeline-item";
+                    
+                    const circleIcon = p.is_finished ? '✅' : '⚡';
+                    
+                    const escapedProjPath = p.path.replace(/\\/g, '/');
+                    itemDiv.innerHTML = `
+                        <div class="timeline-badge" title="${p.is_finished ? 'Finished Project' : 'Active Project'}">
+                            ${circleIcon}
+                        </div>
+                        <div class="timeline-date">${p.footage_date || 'Unknown Date'}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-project-header">
+                                <div class="timeline-project-title" style="cursor: pointer;"
+                                     title="Click to open project folder: ${p.path}"
+                                     onclick="openProjectFile('${escapedProjPath}')">
+                                    <span class="project-name">📁 ${p.name}</span>
+                                    ${p.is_finished ? `<span class="badge badge-primary" style="font-size: 0.65rem; padding: 0.15rem 0.45rem; background: rgba(139, 92, 246, 0.18); border-color: rgba(139, 92, 246, 0.35); color: #d8b4fe;">Finished</span>` : ''}
+                                </div>
+                                <span style="font-weight: 700; font-size: 0.95rem; color: var(--accent-green);">${p.size_gb.toFixed(1)} GB</span>
+                            </div>
+                            <div class="timeline-project-meta">
+                                <span style="display: inline-flex; align-items: center; gap: 6px;">
+                                    ${flagHtml} ${p.country}
+                                </span>
+                                <span>•</span>
+                                <span>Files: <strong>${p.files_count}</strong></span>
+                            </div>
+                            <div class="project-files-container" style="margin-top: 1rem;">
+                                ${filesHtml || '<span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No active project files inside</span>'}
+                            </div>
+                            <div class="project-outputs-container" style="display: flex; gap: 8px; margin-top: 0.65rem; flex-wrap: wrap;">
+                                ${linksHtml}
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 0.75rem;">
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Compliance Checklist</span>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="compliance-dots">
+                                        ${dotsHtml}
+                                    </div>
+                                    <button class="options-btn" onclick="openMetadataModal('${safeKey}', event)" title="Add or edit output links">⋮</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    timelineDiv.appendChild(itemDiv);
+                });
+                
+                projectsGroupedContainer.appendChild(timelineDiv);
+                return;
+            }
+
+            const groupedProjects = {};
 
             projectsList.forEach(p => {
                 const matchesSearch = p.name.toLowerCase().includes(searchKeyword) ||
@@ -1253,7 +1775,11 @@
             });
 
             const countries = Object.keys(groupedProjects);
-            countries.sort();
+            countries.sort((countryA, countryB) => {
+                const latestA = Math.max(...groupedProjects[countryA].map(p => p.footage_date_raw || 0), 0);
+                const latestB = Math.max(...groupedProjects[countryB].map(p => p.footage_date_raw || 0), 0);
+                return latestB - latestA;
+            });
 
             if (countries.length === 0) {
                 projectsGroupedContainer.innerHTML = `
@@ -1264,7 +1790,7 @@
             } else {
                 countries.forEach(country => {
                     const countryProjs = groupedProjects[country];
-                    countryProjs.sort((a, b) => a.name.localeCompare(b.name));
+                    countryProjs.sort((a, b) => (b.footage_date_raw || 0) - (a.footage_date_raw || 0));
                     
                     const totalSize = countryProjs.reduce((sum, p) => sum + p.size_gb, 0);
                     
@@ -1276,11 +1802,12 @@
                     let projectRowsHtml = '';
                     
                     countryProjs.forEach(p => {
+                        const safeKey = p.key.replace(/\\/g, '/');
                         let filesHtml = '';
                         if (p.project_files && p.project_files.length > 0) {
                             p.project_files.forEach(pf => {
                                 const isResolve = pf.type === 'DaVinci Resolve';
-                                const escapedPath = pf.path.replace(/\\/g, '\\\\');
+                                const escapedPath = pf.path.replace(/\\/g, '/');
                                 filesHtml += `
                                     <span class="project-file-chip ${isResolve ? 'resolve' : 'premiere'}" 
                                           title="Click to open: ${pf.path}"
@@ -1304,8 +1831,6 @@
                                 `${item.name}: Found. Click to open in File Explorer.` : 
                                 `${item.name}: Missing! Click to create and open folder.`;
                             
-                            const safeKey = p.key.replace(/\\/g, '\\\\');
-                            
                             dotsHtml += `
                                 <div class="comp-dot ${item.has ? 'active' : ''}" 
                                      data-tooltip="${tooltipText}"
@@ -1314,21 +1839,56 @@
                             `;
                         });
 
+                        let linksHtml = '';
+                        if (p.metadata) {
+                            if (p.metadata.youtube_video) {
+                                linksHtml += `
+                                    <a class="output-link youtube" href="${p.metadata.youtube_video}" target="_blank" onclick="event.stopPropagation();" title="Watch YouTube video">
+                                        📺 YouTube
+                                    </a>
+                                `;
+                            }
+                            if (p.metadata.public_album) {
+                                linksHtml += `
+                                    <a class="output-link public" href="${p.metadata.public_album}" target="_blank" onclick="event.stopPropagation();" title="View Public Album">
+                                        📸 Public Album
+                                    </a>
+                                `;
+                            }
+                            if (p.metadata.private_album) {
+                                linksHtml += `
+                                    <a class="output-link private" href="${p.metadata.private_album}" target="_blank" onclick="event.stopPropagation();" title="View Private Album">
+                                        🔒 Private Album
+                                    </a>
+                                `;
+                            }
+                        }
+
+                        const escapedProjPath = p.path.replace(/\\/g, '/');
                         projectRowsHtml += `
                             <div class="project-row-card">
                                 <div class="project-info-side">
-                                    <div class="project-name-line" style="display: flex; align-items: center; gap: 8px;">
-                                        <span class="project-name">${p.name}</span>
+                                    <div class="project-name-line" style="display: flex; align-items: center; gap: 8px; cursor: pointer;" 
+                                         title="Click to open project folder: ${p.path}"
+                                         onclick="openProjectFile('${escapedProjPath}')">
+                                        <span class="project-name">📁 ${p.name}</span>
                                         ${p.is_finished ? `<span class="badge badge-primary" style="font-size: 0.65rem; padding: 0.15rem 0.45rem; background: rgba(139, 92, 246, 0.18); border-color: rgba(139, 92, 246, 0.35); color: #d8b4fe;">Finished</span>` : ''}
                                     </div>
                                     <div class="project-files-container">
                                         ${filesHtml || '<span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No active project files inside</span>'}
                                     </div>
+                                    <div class="project-outputs-container" style="display: flex; gap: 8px; margin-top: 0.45rem; flex-wrap: wrap;">
+                                        ${linksHtml}
+                                    </div>
                                 </div>
                                 <div class="project-meta-side">
+                                    <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500; margin-right: 12px; white-space: nowrap;">📅 ${p.footage_date || 'No Date'}</span>
                                     <span class="project-size">${p.size_gb.toFixed(1)} GB</span>
-                                    <div class="compliance-dots">
-                                        ${dotsHtml}
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div class="compliance-dots">
+                                            ${dotsHtml}
+                                        </div>
+                                        <button class="options-btn" onclick="openMetadataModal('${safeKey}', event)" title="Add or edit output links">⋮</button>
                                     </div>
                                 </div>
                             </div>
@@ -1366,14 +1926,13 @@
                 item.className = "flex-item";
                 item.style.cursor = "pointer";
                 item.title = "Click to open file in default application";
-                const escapedFilePath = f.path.replace(/\\/g, '\\\\');
+                const escapedFilePath = f.path.replace(/\\/g, '/');
                 item.onclick = () => openProjectFile(escapedFilePath);
                 
-                let rel = f.path.substring(f.path.indexOf("Teshi projects"));
                 item.innerHTML = `
                     <div class="file-name-meta">
                         <span style="font-weight: 600; color: #fff;">${f.name}</span>
-                        <span class="subtext">${rel}</span>
+                        <span class="subtext">${f.rel_path}</span>
                     </div>
                     <span class="badge badge-warning">${f.size_gb.toFixed(2)} GB</span>
                 `;
