@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Workspace Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #080612;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #ec4899;
+            --accent-green: #10b981;
+            --accent-blue: #06b6d4;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --font-family: 'Outfit', sans-serif;
+            --glow-color: rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 5% 5%, rgba(139, 92, 246, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 95% 95%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 60%);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            line-height: 1.5;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .logo-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-section p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.35rem;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.7rem 1.4rem;
+            border-radius: 14px;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(12px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), #6366f1);
+            border: none;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.45);
+        }
+
+        .btn-secondary {
+            background: rgba(236, 72, 153, 0.1);
+            border: 1px solid rgba(236, 72, 153, 0.25);
+            color: #fca5a5;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(236, 72, 153, 0.2);
+            border-color: rgba(236, 72, 153, 0.4);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.2);
+        }
+
+        #btn-shutdown:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.45);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
+        }
+
+        /* Overview Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 1.6rem;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-primary));
+        }
+
+        .metric-card.pink::before {
+            background: linear-gradient(90deg, var(--accent-secondary), #f43f5e);
+        }
+
+        .metric-card.green::before {
+            background: linear-gradient(90deg, var(--accent-green), #059669);
+        }
+
+        .metric-card.orange::before {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+        }
+
+        .metric-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .metric-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.6rem;
+        }
+
+        /* Search & Filter Controls */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1rem 1.5rem;
+            border-radius: 18px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            color: white;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tab:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .filter-tab.active {
+            color: white;
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        /* Two Column Layout */
+        .workspace-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Collapsible Parent Categories / Grouping */
+        .country-group {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .country-group:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .country-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.75rem;
+            background: rgba(255, 255, 255, 0.015);
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .country-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .country-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .country-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .country-stats-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .country-stats-val {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .country-group.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .country-content {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            border-top: 1px solid var(--card-border);
+            transition: max-height 0.3s ease-out;
+            max-height: 2000px;
+            overflow: hidden;
+        }
+
+        .country-group.collapsed .country-content {
+            max-height: 0;
+            padding: 0;
+            border-top-color: transparent;
+        }
+
+        /* Projects inside Groups */
+        .project-row-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .project-row-card:last-child {
+            border-bottom: none;
+        }
+
+        .project-row-card:hover {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .project-info-side {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex-grow: 1;
+            max-width: 60%;
+        }
+
+        .project-name-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Active Project Files */
+        .project-files-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.1rem;
+        }
+
+        .project-file-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-file-chip:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .project-file-chip.resolve {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .project-file-chip.resolve:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.45);
+        }
+
+        .project-file-chip.premiere {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.2);
+            color: #c084fc;
+        }
+
+        .project-file-chip.premiere:hover {
+            background: rgba(139, 92, 246, 0.18);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        /* Project Right Side Meta */
+        .project-meta-side {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            min-width: 280px;
+            justify-content: flex-end;
+        }
+
+        .project-size {
+            font-weight: 600;
+            font-size: 0.95rem;
+            width: 80px;
+            text-align: right;
+        }
+
+        /* Compliance Checklist Dots */
+        .compliance-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .comp-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .comp-dot.active {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        .comp-dot:active {
+            transform: scale(0.75);
+        }
+
+        .comp-dot::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-5px);
+            background: #0f172a;
+            color: #fff;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            z-index: 100;
+        }
+
+        .comp-dot:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        /* Side Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 1.75rem;
+            backdrop-filter: blur(15px);
+            margin-bottom: 1.75rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent-primary);
+            padding-left: 10px;
+        }
+
+        /* Storage Allocation list */
+        .root-folder-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .root-folder-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Large Files List */
+        .flex-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .flex-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .flex-item:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .file-name-meta {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+        }
+
+        .file-name-meta .subtext {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+            word-break: break-all;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.55rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.08);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.08);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .badge-primary {
+            background: rgba(139, 92, 246, 0.15);
+            color: #d8b4fe;
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+
+        /* Form Controls */
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: white;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.25);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Typo Fix Styling */
+        .typo-fix-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .typo-correct {
+            color: var(--accent-green);
+        }
+
+        /* Glass Overlay Loader (fallback/initial only) */
+        .scan-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(8, 6, 18, 0.85);
+            backdrop-filter: blur(25px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .scan-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scan-spinner {
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(139, 92, 246, 0.1);
+            border-top-color: var(--accent-primary);
+            border-bottom-color: var(--accent-secondary);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+
+        .scan-overlay h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, white, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .scan-overlay p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Toast notifications */
+        .alert-toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(15, 11, 28, 0.95);
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            color: white;
+            padding: 1.1rem 1.6rem;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .alert-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        .pulse-updating {
+            animation: pulse-op 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-op {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scan Overlay Loader (only for initial load fallback) -->
+    <div class="scan-overlay" id="scan-overlay">
+        <div class="scan-spinner"></div>
+        <h2>Loading Workspace...</h2>
+        <p>Loading catalog index file.</p>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-section">
+                <h1>🎬 Creator Space</h1>
+                <p>
+                    Advanced Workspace Indexing & Optimization Engine
+                    <span id="db-status-badge" class="badge badge-warning pulse-updating" style="display: none; align-items: center; gap: 8px; margin-left: 15px; background: rgba(245, 158, 11, 0.15); border-color: rgba(245,158,11,0.3);">
+                        <svg class="spinning" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10" stroke-width="4" stroke="rgba(255,255,255,0.2)"></circle>
+                            <path d="M12 2C6.47715 2 2 6.47715 2 12C2 13.5 2.5 15 3 16" stroke-width="4" stroke-linecap="round"></path>
+                        </svg>
+                        Updating database...
+                    </span>
+                </p>
+            </div>
+            <div class="actions-group">
+                <button class="btn btn-primary" onclick="forceRescan()" id="btn-scan">
+                    <svg class="w-5 h-5" id="scan-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"></path>
+                    </svg>
+                    Rescan Workspace
+                </button>
+                <button class="btn btn-secondary" onclick="cleanClutter()" id="btn-clean">
+                    🧹 Clean macOS Clutter
+                </button>
+                <button class="btn" onclick="shutdownServer()" id="btn-shutdown" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5;">
+                    🛑 Kill Instance
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="metrics-grid" id="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Workspace Volume</div>
+                <div class="metric-val" id="stat-storage">0.0 GB</div>
+                <div class="metric-desc">Total storage consumed</div>
+            </div>
+            <div class="metric-card green">
+                <div class="metric-label">Video Footage</div>
+                <div class="metric-val" id="stat-videos">0</div>
+                <div class="metric-desc">Raw editing clips tracked</div>
+            </div>
+            <div class="metric-card pink">
+                <div class="metric-label">Image Assets</div>
+                <div class="metric-val" id="stat-images">0</div>
+                <div class="metric-desc">Thumbnails and graphics</div>
+            </div>
+            <div class="metric-card orange">
+                <div class="metric-label">macOS Clutter</div>
+                <div class="metric-val" id="stat-clutter">0</div>
+                <div class="metric-desc" id="stat-clutter-desc">0.0 MB hidden forks</div>
+            </div>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="controls-row">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="search-box" oninput="filterData()" placeholder="Search projects, categories, or project files...">
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="setFilter('all', this)">All Projects</button>
+                <button class="filter-tab" onclick="setFilter('resolve', this)">DaVinci Projects</button>
+                <button class="filter-tab" onclick="setFilter('premiere', this)">Premiere Projects</button>
+                <button class="filter-tab" onclick="setFilter('warning', this)">Compliance Warnings</button>
+            </div>
+        </div>
+
+        <!-- Main Layout Split -->
+        <div class="workspace-split">
+            <!-- Left Side: Grouped Active Projects -->
+            <div id="projects-grouped-container">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Right Side: Side Panels -->
+            <div>
+                <!-- Project Creator -->
+                <div class="card">
+                    <div class="card-title">Standardized Project Creator</div>
+                    <form onsubmit="createProject(event)">
+                        <div class="input-group">
+                            <label class="input-label" for="proj-name">Project Name</label>
+                            <input class="form-control" type="text" id="proj-name" placeholder="e.g. Summer Mokki trip Part 2" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" for="proj-parent">Parent Category (Country)</label>
+                            <select class="form-control" id="proj-parent" required>
+                                <option value="Finland">Finland</option>
+                                <option value="Lanka">Lanka</option>
+                                <option value="America">America</option>
+                                <option value="Korea">Korea</option>
+                                <option value="France">France</option>
+                                <option value="Norway">Norway</option>
+                                <option value="Estonia">Estonia</option>
+                                <option value="Portugal">Portugal</option>
+                                <option value="baby">baby</option>
+                                <option value="Unboxing">Unboxing</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" type="submit" style="width: 100%; justify-content: center;">
+                            🆕 Initialize Project Folders
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Storage Allocation -->
+                <div class="card">
+                    <div class="card-title">Storage by Directory</div>
+                    <div id="storage-allocation-list">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Spelling Typos Fixer -->
+                <div class="card" id="typos-card" style="display: none;">
+                    <div class="card-title">
+                        <span>Spelling Audit</span>
+                        <button class="btn" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 8px;" onclick="fixTypos()">
+                            Auto-Fix
+                        </button>
+                    </div>
+                    <div class="flex-list" id="typos-list">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Large Files Finder -->
+                <div class="card">
+                    <div class="card-title">Top Large Media Files</div>
+                    <div class="flex-list" id="large-files-list">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast message overlay -->
+    <div class="alert-toast" id="toast">
+        <span id="toast-message">Message text</span>
+    </div>
+
+    <script>
+        let workspaceData = null;
+        let activeFilter = 'all';
+        let searchKeyword = '';
+        const collapsedStates = {};
+        let pollInterval = null;
+
+        async function loadData(forceScan = false) {
+            const overlay = document.getElementById("scan-overlay");
+            if (!workspaceData && !forceScan) {
+                overlay.classList.add("active");
+            }
+            
+            try {
+                if (forceScan) {
+                    const res = await fetch('/api/scan', { method: 'POST' });
+                    const r = await res.json();
+                    if (r.success) {
+                        showToast("Workspace scan started in the background.");
+                        startPolling();
+                    } else {
+                        showToast(r.message, "error");
+                    }
+                } else {
+                    const res = await fetch('/api/data');
+                    const r = await res.json();
+                    workspaceData = r;
+                    renderDashboard();
+                    
+                    if (r.is_scanning) {
+                        startPolling();
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to fetch workspace data. Check connection to dashboard_helper.py.", "error");
+            } finally {
+                overlay.classList.remove("active");
+            }
+        }
+
+        function startPolling() {
+            document.getElementById("db-status-badge").style.display = 'inline-flex';
+            document.getElementById("scan-icon").classList.add("spinning");
+            document.getElementById("btn-scan").disabled = true;
+
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch('/api/data?poll=true');
+                    const data = await res.json();
+                    
+                    workspaceData = data;
+                    renderDashboard();
+                    
+                    if (!data.is_scanning) {
+                        clearInterval(pollInterval);
+                        pollInterval = null;
+                        document.getElementById("db-status-badge").style.display = 'none';
+                        document.getElementById("scan-icon").classList.remove("spinning");
+                        document.getElementById("btn-scan").disabled = false;
+                        showToast("Workspace index updated successfully!");
+                    }
+                } catch (err) {
+                    console.error("Polling error:", err);
+                }
+            }, 2000);
+        }
+
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById("toast");
+            const text = document.getElementById("toast-message");
+            text.innerText = msg;
+            toast.style.borderColor = type === "success" ? "var(--accent-green)" : "#ef4444";
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 4000);
+        }
+
+        function toggleSection(country) {
+            const section = document.getElementById(`country-group-${country}`);
+            if (section) {
+                section.classList.toggle("collapsed");
+                collapsedStates[country] = section.classList.contains("collapsed");
+            }
+        }
+
+        function setFilter(filterType, element) {
+            document.querySelectorAll(".filter-tab").forEach(tab => tab.classList.remove("active"));
+            element.classList.add("active");
+            activeFilter = filterType;
+            renderDashboard();
+        }
+
+        function filterData() {
+            searchKeyword = document.getElementById("search-box").value.toLowerCase();
+            renderDashboard();
+        }
+
+        async function forceRescan() {
+            await loadData(true);
+        }
+
+        async function cleanClutter() {
+            const btn = document.getElementById("btn-clean");
+            btn.disabled = true;
+            btn.innerText = "🧹 Cleaning...";
+            try {
+                const res = await fetch('/api/clean-clutter', { method: 'POST' });
+                const r = await res.json();
+                if (r.success) {
+                    showToast(r.message);
+                    startPolling();
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                showToast("Failed to run cleanup.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🧹 Clean macOS Clutter";
+            }
+        }
+
+        async function fixTypos() {
+            try {
+                const res = await fetch('/api/fix-typos', { method: 'POST' });
+                const r = await res.json();
+                if (r.success) {
+                    showToast(r.message);
+                    startPolling();
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                showToast("Failed to fix typos.", "error");
+            }
+        }
+
+        async function createProject(e) {
+            e.preventDefault();
+            const name = document.getElementById("proj-name").value;
+            const parent = document.getElementById("proj-parent").value;
+            
+            try {
+                const res = await fetch('/api/create-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, parent })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    showToast(r.message);
+                    document.getElementById("proj-name").value = '';
+                    startPolling();
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                showToast("Failed to create project.", "error");
+            }
+        }
+
+        async function handleDotClick(projectKey, folderType) {
+            try {
+                const res = await fetch('/api/create-and-open-folder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_key: projectKey, folder_type: folderType })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    showToast(r.message);
+                    startPolling();
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                showToast("Failed to initialize or open folder.", "error");
+            }
+        }
+
+        async function openProjectFile(filePath) {
+            try {
+                const res = await fetch('/api/open-file', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: filePath })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    showToast(r.message);
+                } else {
+                    showToast(r.message, "error");
+                }
+            } catch (err) {
+                showToast("Failed to open file.", "error");
+            }
+        }
+
+        function getCountryFlag(country) {
+            const low = country.toLowerCase().trim();
+            const map = {
+                'finland': 'fi.png',
+                'lanka': 'lk.png',
+                'america': 'us.png',
+                'korea': 'kr.png',
+                'france': 'fr.png',
+                'norway': 'no.png',
+                'estonisa': 'ee.png',
+                'estonia': 'ee.png',
+                'protugal': 'pt.png',
+                'portugal': 'pt.png'
+            };
+            if (map[low]) {
+                return `/static/z_Other/flags/${map[low]}`;
+            }
+            return null;
+        }
+
+        async function shutdownServer() {
+            if (!confirm("Are you sure you want to stop the backend server? The dashboard will no longer be interactive.")) {
+                return;
+            }
+            
+            const btn = document.getElementById("btn-shutdown");
+            btn.disabled = true;
+            btn.innerText = "🛑 Terminating...";
+            
+            try {
+                const res = await fetch('/api/shutdown', { method: 'POST' });
+                const r = await res.json();
+                
+                if (r.success) {
+                    showToast(r.message);
+                    if (pollInterval) clearInterval(pollInterval);
+                    
+                    document.body.innerHTML = `
+                        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #080612; color: white; font-family: 'Outfit', sans-serif;">
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">🛑</div>
+                            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Instance Terminated</h1>
+                            <p style="color: #9ca3af; font-size: 1.05rem;">The Creator Space backend server has been stopped and its lock released.</p>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem;">You can safely close this browser tab now.</p>
+                        </div>
+                    `;
+                } else {
+                    showToast(r.message, "error");
+                    btn.disabled = false;
+                    btn.innerText = "🛑 Kill Instance";
+                }
+            } catch (err) {
+                showToast("Server shutdown request dispatched.", "success");
+                if (pollInterval) clearInterval(pollInterval);
+                setTimeout(() => {
+                    document.body.innerHTML = `
+                        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #080612; color: white; font-family: 'Outfit', sans-serif;">
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">🛑</div>
+                            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Instance Terminated</h1>
+                            <p style="color: #9ca3af; font-size: 1.05rem;">The Creator Space backend server has been stopped and its lock released.</p>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem;">You can safely close this browser tab now.</p>
+                        </div>
+                    `;
+                }, 1000);
+            }
+        }
+
+        function renderDashboard() {
+            if (!workspaceData) return;
+
+            document.getElementById("stat-storage").innerText = workspaceData.summary.total_size_gb.toFixed(1) + " GB";
+            document.getElementById("stat-videos").innerText = workspaceData.summary.video_files.toLocaleString();
+            document.getElementById("stat-images").innerText = workspaceData.summary.image_files.toLocaleString();
+            document.getElementById("stat-clutter").innerText = workspaceData.summary.clutter_files.toLocaleString();
+            document.getElementById("stat-clutter-desc").innerText = workspaceData.summary.clutter_size_mb.toFixed(1) + " MB of resource forks";
+
+            const allocationList = document.getElementById("storage-allocation-list");
+            allocationList.innerHTML = '';
+            const maxGb = Math.max(...workspaceData.root_folders.map(f => f.size_gb), 1);
+            const sortedFolders = [...workspaceData.root_folders].sort((a,b) => b.size_gb - a.size_gb);
+            
+            sortedFolders.forEach(folder => {
+                if (folder.name.startsWith("1_Dummy")) return;
+                const pct = (folder.size_gb / maxGb) * 100;
+                const item = document.createElement("div");
+                item.className = "root-folder-item";
+                item.innerHTML = `
+                    <div class="root-folder-info">
+                        <span>📁 ${folder.name}</span>
+                        <span style="font-weight: 600;">${folder.size_gb.toFixed(1)} GB</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                allocationList.appendChild(item);
+            });
+
+            const projectsGroupedContainer = document.getElementById("projects-grouped-container");
+            projectsGroupedContainer.innerHTML = '';
+
+            const groupedProjects = {};
+            const projectsList = Object.values(workspaceData.projects);
+
+            projectsList.forEach(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchKeyword) ||
+                                      p.country.toLowerCase().includes(searchKeyword) ||
+                                      p.project_files.some(pf => pf.name.toLowerCase().includes(searchKeyword));
+                if (!matchesSearch) return;
+
+                if (activeFilter === 'resolve' && !p.has_resolve) return;
+                if (activeFilter === 'premiere' && !p.has_premiere) return;
+                if (activeFilter === 'warning' && (p.has_footage && p.has_audio && p.has_exports && p.has_thumbnail)) return;
+
+                if (!groupedProjects[p.country]) {
+                    groupedProjects[p.country] = [];
+                }
+                groupedProjects[p.country].push(p);
+            });
+
+            const countries = Object.keys(groupedProjects);
+            countries.sort();
+
+            if (countries.length === 0) {
+                projectsGroupedContainer.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        🔍 No active projects found matching the filters or search query.
+                    </div>
+                `;
+            } else {
+                countries.forEach(country => {
+                    const countryProjs = groupedProjects[country];
+                    countryProjs.sort((a, b) => a.name.localeCompare(b.name));
+                    
+                    const totalSize = countryProjs.reduce((sum, p) => sum + p.size_gb, 0);
+                    
+                    const groupDiv = document.createElement("div");
+                    const isCollapsed = collapsedStates[country] !== false;
+                    groupDiv.className = `country-group ${isCollapsed ? 'collapsed' : ''}`;
+                    groupDiv.id = `country-group-${country}`;
+                    
+                    let projectRowsHtml = '';
+                    
+                    countryProjs.forEach(p => {
+                        let filesHtml = '';
+                        if (p.project_files && p.project_files.length > 0) {
+                            p.project_files.forEach(pf => {
+                                const isResolve = pf.type === 'DaVinci Resolve';
+                                const escapedPath = pf.path.replace(/\\/g, '\\\\');
+                                filesHtml += `
+                                    <span class="project-file-chip ${isResolve ? 'resolve' : 'premiere'}" 
+                                          title="Click to open: ${pf.path}"
+                                          onclick="openProjectFile('${escapedPath}')">
+                                        ${isResolve ? '🎥' : '🎬'} ${pf.name}
+                                    </span>
+                                `;
+                            });
+                        }
+                        
+                        const complianceItems = [
+                            { type: "footage", name: "Footage folder (01_Footage)", has: p.has_footage },
+                            { type: "audio", name: "Audio folder (02_Audio)", has: p.has_audio },
+                            { type: "exports", name: "Exports folder (05_Exports)", has: p.has_exports },
+                            { type: "thumbnail", name: "Thumbnail folder (06_Thumbnails)", has: p.has_thumbnail }
+                        ];
+
+                        let dotsHtml = '';
+                        complianceItems.forEach(item => {
+                            const tooltipText = item.has ? 
+                                `${item.name}: Found. Click to open in File Explorer.` : 
+                                `${item.name}: Missing! Click to create and open folder.`;
+                            
+                            const safeKey = p.key.replace(/\\/g, '\\\\');
+                            
+                            dotsHtml += `
+                                <div class="comp-dot ${item.has ? 'active' : ''}" 
+                                     data-tooltip="${tooltipText}"
+                                     onclick="handleDotClick('${safeKey}', '${item.type}')">
+                                </div>
+                            `;
+                        });
+
+                        projectRowsHtml += `
+                            <div class="project-row-card">
+                                <div class="project-info-side">
+                                    <div class="project-name-line">
+                                        <span class="project-name">${p.name}</span>
+                                    </div>
+                                    <div class="project-files-container">
+                                        ${filesHtml || '<span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No active project files inside</span>'}
+                                    </div>
+                                </div>
+                                <div class="project-meta-side">
+                                    <span class="project-size">${p.size_gb.toFixed(1)} GB</span>
+                                    <div class="compliance-dots">
+                                        ${dotsHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    const flagUrl = getCountryFlag(country);
+                    const flagHtml = flagUrl ? 
+                        `<img src="${flagUrl}" style="width: 24px; height: 16px; object-fit: cover; border-radius: 4px; margin-right: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);" alt="${country} flag">` : 
+                        `📁 `;
+
+                    groupDiv.innerHTML = `
+                        <div class="country-header" onclick="toggleSection('${country}')">
+                            <div class="country-title" style="display: flex; align-items: center;">
+                                <span class="collapse-icon" style="margin-right: 8px;">▼</span>
+                                ${flagHtml}${country}
+                            </div>
+                            <div class="country-meta">
+                                <span class="country-stats-label">Projects: <span class="country-stats-val">${countryProjs.length}</span></span>
+                                <span class="country-stats-label">Volume: <span class="country-stats-val">${totalSize.toFixed(1)} GB</span></span>
+                            </div>
+                        </div>
+                        <div class="country-content">
+                            ${projectRowsHtml}
+                        </div>
+                    `;
+                    projectsGroupedContainer.appendChild(groupDiv);
+                });
+            }
+
+            const largeList = document.getElementById("large-files-list");
+            largeList.innerHTML = '';
+            workspaceData.large_files.slice(0, 10).forEach(f => {
+                const item = document.createElement("div");
+                item.className = "flex-item";
+                item.style.cursor = "pointer";
+                item.title = "Click to open file in default application";
+                const escapedFilePath = f.path.replace(/\\/g, '\\\\');
+                item.onclick = () => openProjectFile(escapedFilePath);
+                
+                let rel = f.path.substring(f.path.indexOf("Teshi projects"));
+                item.innerHTML = `
+                    <div class="file-name-meta">
+                        <span style="font-weight: 600; color: #fff;">${f.name}</span>
+                        <span class="subtext">${rel}</span>
+                    </div>
+                    <span class="badge badge-warning">${f.size_gb.toFixed(2)} GB</span>
+                `;
+                largeList.appendChild(item);
+            });
+
+            const typosCard = document.getElementById("typos-card");
+            const typosList = document.getElementById("typos-list");
+            typosList.innerHTML = '';
+            
+            if (workspaceData.typos && workspaceData.typos.length > 0) {
+                typosCard.style.display = 'block';
+                const uniqueTypos = [];
+                const seen = new Set();
+                workspaceData.typos.forEach(t => {
+                    const key = `${t.current}->${t.suggestion}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        uniqueTypos.push(t);
+                    }
+                });
+
+                uniqueTypos.forEach(t => {
+                    const item = document.createElement("div");
+                    item.className = "flex-item";
+                    item.innerHTML = `
+                        <div class="file-name-meta">
+                            <span class="subtext" style="color: var(--text-muted); font-size: 0.75rem;">Type: ${t.type}</span>
+                            <div class="typo-fix-group">
+                                <span style="text-decoration: line-through; opacity: 0.5;">${t.current}</span>
+                                <span style="color: var(--accent-secondary);">→</span>
+                                <span class="typo-correct">${t.suggestion}</span>
+                            </div>
+                        </div>
+                    `;
+                    typosList.appendChild(item);
+                });
+            } else {
+                typosCard.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData(false);
+        });
+    </script>
+</body>
+</html>
