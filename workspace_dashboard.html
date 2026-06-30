@@ -1244,7 +1244,7 @@
 
                 if (activeFilter === 'resolve' && !p.has_resolve) return;
                 if (activeFilter === 'premiere' && !p.has_premiere) return;
-                if (activeFilter === 'warning' && (p.has_footage && p.has_audio && p.has_exports && p.has_thumbnail)) return;
+                if (activeFilter === 'warning' && (p.is_finished || (p.has_footage && p.has_audio && p.has_exports && p.has_thumbnail))) return;
 
                 if (!groupedProjects[p.country]) {
                     groupedProjects[p.country] = [];
@@ -1317,8 +1317,9 @@
                         projectRowsHtml += `
                             <div class="project-row-card">
                                 <div class="project-info-side">
-                                    <div class="project-name-line">
+                                    <div class="project-name-line" style="display: flex; align-items: center; gap: 8px;">
                                         <span class="project-name">${p.name}</span>
+                                        ${p.is_finished ? `<span class="badge badge-primary" style="font-size: 0.65rem; padding: 0.15rem 0.45rem; background: rgba(139, 92, 246, 0.18); border-color: rgba(139, 92, 246, 0.35); color: #d8b4fe;">Finished</span>` : ''}
                                     </div>
                                     <div class="project-files-container">
                                         ${filesHtml || '<span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">No active project files inside</span>'}

@@ -155,9 +155,17 @@ def run_scan():
         
         is_project = False
         project_key = None
+        is_finished = False
+        
         if len(parts) >= 2:
             parent = parts[0]
-            if parent not in ["1_Assets", "1_Dummy_project", "1_Shorts", "z_Finished", "z_Other", "z_qoutes and dreams and recipes"]:
+            if parent == "z_Finished" and len(parts) >= 3:
+                country = parts[1]
+                if country not in ["1_assets", "voicecuts"]:
+                    project_key = os.path.join("z_Finished", parts[1], parts[2])
+                    is_project = True
+                    is_finished = True
+            elif parent not in ["1_Assets", "1_Dummy_project", "1_Shorts", "z_Finished", "z_Other", "z_qoutes and dreams and recipes"]:
                 project_key = os.path.join(parts[0], parts[1])
                 is_project = True
             
@@ -167,7 +175,8 @@ def run_scan():
                     "key": project_key,
                     "path": os.path.join(workspace_root, project_key),
                     "name": os.path.basename(project_key),
-                    "country": parts[0],
+                    "country": parts[1] if is_finished else parts[0],
+                    "is_finished": is_finished,
                     "has_resolve": False,
                     "has_premiere": False,
                     "has_exports": False,
